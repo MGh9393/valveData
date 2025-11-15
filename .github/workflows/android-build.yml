@@ -3,7 +3,7 @@ name: Build APK for React app
 on:
   push:
     branches:
-      - main  # یا هر برنچی که می‌خواهی روی اون ساخت انجام بشه
+      - master  # برنچ مورد نظر شما
 
 jobs:
   build:
