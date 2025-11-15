@@ -38,15 +38,25 @@ jobs:
         sudo mkdir -p /usr/local/android-sdk/cmdline-tools
         cd /usr/local/android-sdk/cmdline-tools
 
-        # دانلود SDK
+        # دانلود ابزارها
         sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
-        sudo unzip tools.zip -d latest
+
+        # استخراج
+        sudo unzip tools.zip -d temp
+
+        # انتقال محتوای صحیح به پوشه latest
+        sudo mkdir -p latest
+        sudo mv temp/cmdline-tools/* latest/
+
+        # پاکسازی اضافات
+        sudo rm -rf temp
 
         export ANDROID_HOME=/usr/local/android-sdk
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
 
         yes | sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
         sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
 
     - name: Build APK
       run: |
