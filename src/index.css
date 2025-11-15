@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Dark tech theme - inspired by futuristic interfaces */
+    --background: 220 25% 8%;
+    --foreground: 210 20% 98%;
+
+    --card: 220 20% 12%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 220 20% 12%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 210 100% 60%;
+    --primary-foreground: 220 25% 8%;
+
+    --secondary: 220 18% 18%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 220 15% 15%;
+    --muted-foreground: 210 15% 65%;
+
+    --accent: 180 80% 55%;
+    --accent-foreground: 220 25% 8%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 18%;
+    --ring: 210 100% 60%;
+
+    --radius: 0.75rem;
+    
+    /* Custom tech theme tokens */
+    --tech-cyan: 180 80% 55%;
+    --tech-purple: 270 80% 65%;
+    --tech-orange: 25 95% 58%;
+    --tech-gradient-1: linear-gradient(135deg, hsl(210 100% 60% / 0.1), hsl(180 80% 55% / 0.1));
+    --tech-gradient-2: linear-gradient(135deg, hsl(270 80% 65% / 0.1), hsl(210 100% 60% / 0.1));
+    --tech-gradient-3: linear-gradient(135deg, hsl(25 95% 58% / 0.1), hsl(0 80% 60% / 0.1));
+    
+    /* Card variant colors */
+    --card-cyan: 220 20% 12%;
+    --card-cyan-border: 180 80% 55%;
+    --card-cyan-header: 180 80% 55%;
+    
+    --card-purple: 220 20% 12%;
+    --card-purple-border: 270 80% 65%;
+    --card-purple-header: 270 80% 65%;
+    
+    --card-orange: 220 20% 12%;
+    --card-orange-border: 25 95% 58%;
+    --card-orange-header: 25 95% 58%;
+    
+    --tag-bg: 220 20% 16%;
+    --tag-border: 220 20% 25%;
+    --hover-bg: 220 20% 18%;
+
+    --sidebar-background: 220 25% 10%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 210 100% 60%;
+    --sidebar-primary-foreground: 220 25% 8%;
+    --sidebar-accent: 220 20% 15%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 220 20% 20%;
+    --sidebar-ring: 210 100% 60%;
+  }
+
+  .dark {
+    --background: 220 25% 8%;
+    --foreground: 210 20% 98%;
+
+    --card: 220 20% 12%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 220 20% 12%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 210 100% 60%;
+    --primary-foreground: 220 25% 8%;
+
+    --secondary: 220 18% 18%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 220 15% 15%;
+    --muted-foreground: 210 15% 65%;
+
+    --accent: 180 80% 55%;
+    --accent-foreground: 220 25% 8%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 18%;
+    --ring: 210 100% 60%;
+    
+    --tech-cyan: 180 80% 55%;
+    --tech-purple: 270 80% 65%;
+    --tech-orange: 25 95% 58%;
+    
+    --card-cyan: 220 20% 12%;
+    --card-cyan-border: 180 80% 55%;
+    --card-cyan-header: 180 80% 55%;
+    
+    --card-purple: 220 20% 12%;
+    --card-purple-border: 270 80% 65%;
+    --card-purple-header: 270 80% 65%;
+    
+    --card-orange: 220 20% 12%;
+    --card-orange-border: 25 95% 58%;
+    --card-orange-header: 25 95% 58%;
+    
+    --tag-bg: 220 20% 16%;
+    --tag-border: 220 20% 25%;
+    --hover-bg: 220 20% 18%;
+    
+    --sidebar-background: 220 25% 10%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 210 100% 60%;
+    --sidebar-primary-foreground: 220 25% 8%;
+    --sidebar-accent: 220 20% 15%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 220 20% 20%;
+    --sidebar-ring: 210 100% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  [dir="rtl"] {
+    direction: rtl;
+  }
+}
