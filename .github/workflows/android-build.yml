@@ -40,4 +40,5 @@ jobs:
     - name: Build APK (without Android Studio)
       run: |
         cd android  # رفتن به پوشه اندروید
+        chmod +x ./gradlew  # دادن مجوز اجرایی به gradlew
         ./gradlew assembleRelease  # ساخت فایل APK در حالت release
