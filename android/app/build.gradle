@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     namespace "com.g.mashiz.valvedata"
 
+    // نسخه‌های سازگار با Gradle 8.5.2 و Capacitor
     compileSdk 34
 
     defaultConfig {
@@ -38,27 +39,26 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    // نسخه‌های پایدار
+    // نسخه‌های پایدار AndroidX
     implementation "androidx.appcompat:appcompat:1.7.0"
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
     implementation "androidx.core:core-splashscreen:1.0.1"
 
-    // --- رفع خطای AAR Metadata: نسخه‌های سازگار با compileSdk=34 ---
+    // نسخه‌های مطمئن و سازگار با compileSdk = 34
     implementation "androidx.core:core:1.13.1"
     implementation "androidx.core:core-ktx:1.13.1"
-    // --------------------------------------------------------------
 
     implementation project(':capacitor-android')
+    implementation project(':capacitor-cordova-android-plugins')
 
     testImplementation "junit:junit:4.13.2"
     androidTestImplementation "androidx.test.ext:junit:1.2.1"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.6.1"
-
-    implementation project(':capacitor-cordova-android-plugins')
 }
 
 apply from: 'capacitor.build.gradle'
 
+// گوگل سرویس‌ها (اختیاری)
 try {
     def servicesJSON = file('google-services.json')
     if (servicesJSON.exists() && servicesJSON.text) {
@@ -66,4 +66,12 @@ try {
     }
 } catch(Exception e) {
     logger.info("google-services.json not found — google-services plugin skipped.")
+}
+
+// 🔥 جلوگیری قطعی از لود نسخه 1.15.0
+configurations.all {
+    resolutionStrategy {
+        force "androidx.core:core:1.13.1"
+        force "androidx.core:core-ktx:1.13.1"
+    }
 }
