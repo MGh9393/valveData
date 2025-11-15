@@ -1,70 +1,70 @@
 name: Build Android APK
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      # -----------------------------
+      # 1. Checkout source code
+      # -----------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+      # -----------------------------
+      # 2. Install Node + dependencies
+      # -----------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-    - name: Install dependencies
-      run: |
-        npm ci
-        npm run build
+      - name: Install NPM packages
+        run: npm install
 
-    - name: Install Capacitor Android & Sync
-      run: |
-        npm install @capacitor/android
-        npx cap sync android
+      # -----------------------------
+      # 3. Install Capacitor Android platform
+      # -----------------------------
+      - name: Install Capacitor Android
+        run: |
+          npx cap sync android
 
-    - name: Install Android Command Line Tools
-      run: |
-        sudo mkdir -p /usr/local/android-sdk/cmdline-tools
-        cd /usr/local/android-sdk/cmdline-tools
-        sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
-        sudo unzip tools.zip -d temp
-        sudo mkdir -p latest
-        sudo mv temp/cmdline-tools/* latest/
-        sudo rm -rf temp
+      # -----------------------------
+      # 4. Install Android SDK (Safe & Writable)
+      # -----------------------------
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-        # ---- مهم: حل خطای شما ----
-        export ANDROID_HOME=/usr/local/android-sdk
-        unset ANDROID_SDK_ROOT
-        sudo rm -rf /usr/local/lib/android
-        # ---------------------------
+      - name: Accept licenses
+        run: yes | sdkmanager --licenses
 
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+      - name: Install required Android components
+        run: |
+          sdkmanager "platform-tools" \
+                     "build-tools;35.0.0" \
+                     "platforms;android-35"
 
-        yes | sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-        sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
-          "platform-tools" \
-          "platforms;android-34" \
-          "build-tools;34.0.0"
+      # -----------------------------
+      # 5. Setup Gradle
+      # -----------------------------
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-    - name: Fix Gradlew permission
-      run: chmod +x android/gradlew
+      # -----------------------------
+      # 6. Build APK
+      # -----------------------------
+      - name: Build Release APK
+        working-directory: android
+        run: ./gradlew assembleRelease
 
-    - name: Build Release APK
-      run: |
-        export ANDROID_HOME=/usr/local/android-sdk
-        unset ANDROID_SDK_ROOT
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
-        cd android
-        ./gradlew assembleRelease
-
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: android-apk
-        path: android/app/build/outputs/apk/release/*.apk
+      # -----------------------------
+      # 7. Upload APK as artifact
+      # -----------------------------
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
