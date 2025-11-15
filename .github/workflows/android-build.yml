@@ -1,44 +1,61 @@
-name: Build APK for React app
+name: Build APK
 
 on:
   push:
     branches:
-      - master  # برنچ مورد نظر شما
+      - master
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # استفاده از سیستم عامل Ubuntu در GitHub Actions
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2  # این مرحله پروژه رو از مخزن GitHub چک‌اوت می‌کنه
+      uses: actions/checkout@v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
-        node-version: '22'  # نسخه Node.js که پروژه به اون نیاز داره
+        node-version: 20
 
     - name: Install dependencies
-      run: |
-        npm install  # نصب وابستگی‌ها
-        npm run build  # ساخت اپلیکیشن React در فولدر dist
+      run: npm install
 
-    - name: Install Capacitor
-      run: |
-        npm install @capacitor/core @capacitor/cli  # نصب Capacitor
-        npm install @capacitor/android  # نصب پلتفرم اندروید برای Capacitor
-        npx cap sync  # همگام‌سازی پروژه با Capacitor
+    - name: Build React app
+      run: npm run build
+
+    - name: Copy build to Capacitor
+      run: npx cap copy
+
+    - name: Install Java 17 (JDK)
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
     - name: Set up Android SDK
       run: |
-        sudo apt update
-        sudo apt install -y openjdk-11-jdk  # نصب Java Development Kit
-        sudo apt install -y android-sdk  # نصب Android SDK
-        export ANDROID_HOME=/usr/lib/android-sdk
-        export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools  # تنظیم محیط Android SDK
+        sudo mkdir -p /usr/local/android-sdk
+        cd /usr/local/android-sdk
+        sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+        sudo unzip cmdline-tools.zip
+        sudo mkdir -p cmdline-tools
+        sudo mv cmdline-tools/* cmdline-tools/latest
+        export ANDROID_HOME=/usr/local/android-sdk
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+        yes | sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-    - name: Build APK (without Android Studio)
+    - name: Build APK
       run: |
-        cd android  # رفتن به پوشه اندروید
-        chmod +x ./gradlew  # دادن مجوز اجرایی به gradlew
-        ./gradlew assembleRelease  # ساخت فایل APK در حالت release
+        export ANDROID_HOME=/usr/local/android-sdk
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+        cd android
+        chmod +x ./gradlew
+        ./gradlew assembleRelease
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release-apk
+        path: android/app/build/outputs/apk/release/*.apk
