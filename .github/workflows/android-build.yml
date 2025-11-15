@@ -10,66 +10,71 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install Node dependencies
+        run: npm ci
 
-    - name: Build React app
-      run: npm run build
+      - name: Build React app
+        run: npm run build
 
-    - name: Copy build to Capacitor
-      run: npx cap copy
+      - name: Capacitor copy & sync
+        run: |
+          npx cap copy
+          npx cap sync android
 
-    - name: Install Java 17 (JDK)
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
+      - name: Set up Java (Temurin 17)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-        - name: Set up Android SDK
-      run: |
-        sudo mkdir -p /usr/local/android-sdk/cmdline-tools
-        cd /usr/local/android-sdk/cmdline-tools
+      - name: Set up Android SDK (cmdline-tools & platforms)
+        run: |
+          # create sdk folders
+          sudo mkdir -p /usr/local/android-sdk/cmdline-tools
+          cd /usr/local/android-sdk/cmdline-tools
 
-        # دانلود ابزارها
-        sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
+          # download command line tools and extract into a temp dir
+          sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
+          sudo unzip -q tools.zip -d temp
 
-        # استخراج
-        sudo unzip tools.zip -d temp
+          # move correct content into latest (handle nested cmdline-tools folder)
+          sudo mkdir -p latest
+          if [ -d temp/cmdline-tools ]; then
+            sudo mv temp/cmdline-tools/* latest/
+          else
+            sudo mv temp/* latest/
+          fi
+          sudo rm -rf temp tools.zip
 
-        # انتقال محتوای صحیح به پوشه latest
-        sudo mkdir -p latest
-        sudo mv temp/cmdline-tools/* latest/
+          # ensure single SDK env var (avoid conflict)
+          unset ANDROID_SDK_ROOT
+          export ANDROID_HOME=/usr/local/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
 
-        # پاکسازی اضافات
-        sudo rm -rf temp
+          # accept licenses and install essential packages
+          yes | sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-        # جلوگیری از تداخل SDK
-        unset ANDROID_SDK_ROOT
+      - name: Build APK (assembleRelease)
+        env:
+          ANDROID_HOME: /usr/local/android-sdk
+        run: |
+          export ANDROID_HOME=/usr/local/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleRelease --stacktrace
 
-        export ANDROID_HOME=/usr/local/android-sdk
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
-
-        yes | sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-        sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-
-    - name: Build APK
-      run: |
-        export ANDROID_HOME=/usr/local/android-sdk
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
-        cd android
-        chmod +x ./gradlew
-        ./gradlew assembleRelease
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-release-apk
-        path: android/app/build/outputs/apk/release/*.apk
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: android/app/build/outputs/apk/release/*.apk
