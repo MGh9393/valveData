@@ -32,14 +32,14 @@ jobs:
           java-version: '17'
 
       - name: Make gradlew executable
-        run: chmod +x android/gradlew
+        run: chmod +x valveData/android/gradlew
 
       - name: Build Release APK
-        working-directory: android
+        working-directory: valveData/android
         run: ./gradlew assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: android/app/build/outputs/apk/release/*.apk
+          path: valveData/android/app/build/outputs/apk/release/*.apk
