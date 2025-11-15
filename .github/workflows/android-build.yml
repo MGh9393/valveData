@@ -37,8 +37,15 @@ jobs:
         sudo mkdir -p latest
         sudo mv temp/cmdline-tools/* latest/
         sudo rm -rf temp
+
+        # ---- مهم: حل خطای شما ----
         export ANDROID_HOME=/usr/local/android-sdk
+        unset ANDROID_SDK_ROOT
+        sudo rm -rf /usr/local/lib/android
+        # ---------------------------
+
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+
         yes | sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
         sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
           "platform-tools" \
@@ -51,6 +58,7 @@ jobs:
     - name: Build Release APK
       run: |
         export ANDROID_HOME=/usr/local/android-sdk
+        unset ANDROID_SDK_ROOT
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
         cd android
         ./gradlew assembleRelease
