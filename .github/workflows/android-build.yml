@@ -11,24 +11,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Node setup
+      # Node 20 برای Capacitor 7
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install NPM packages
         run: npm install
 
-      # 3. Capacitor sync
-      - name: Install Capacitor Android
-        run: npx cap sync android
+      # Build React / lovable
+      - name: Build Web App
+        run: npm run build
 
-      # 4. Android SDK
+      # اضافه و سینک کردن Capacitor Android
+      - name: Install Capacitor Android
+        run: |
+          npx cap add android || true
+          npx cap sync android
+
+      # Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -41,16 +46,13 @@ jobs:
           sdkmanager "build-tools;35.0.0"
           sdkmanager "platforms;android-35"
 
-      # 5. Gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      # 6. Build APK
       - name: Build Release APK
         working-directory: android
         run: ./gradlew assembleRelease
 
-      # 7. Upload artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
