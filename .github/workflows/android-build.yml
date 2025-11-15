@@ -1,6 +1,9 @@
 name: Build Android APK
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
@@ -8,15 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # -----------------------------
-      # 1. Checkout source code
-      # -----------------------------
+      # 1. Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # -----------------------------
-      # 2. Install Node + dependencies
-      # -----------------------------
+      # 2. Node setup
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -25,16 +24,11 @@ jobs:
       - name: Install NPM packages
         run: npm install
 
-      # -----------------------------
-      # 3. Install Capacitor Android platform
-      # -----------------------------
+      # 3. Capacitor sync
       - name: Install Capacitor Android
-        run: |
-          npx cap sync android
+        run: npx cap sync android
 
-      # -----------------------------
-      # 4. Install Android SDK (Safe & Writable)
-      # -----------------------------
+      # 4. Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -43,26 +37,20 @@ jobs:
 
       - name: Install required Android components
         run: |
-          sdkmanager "platform-tools" \
-                     "build-tools;35.0.0" \
-                     "platforms;android-35"
+          sdkmanager "platform-tools"
+          sdkmanager "build-tools;35.0.0"
+          sdkmanager "platforms;android-35"
 
-      # -----------------------------
-      # 5. Setup Gradle
-      # -----------------------------
+      # 5. Gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      # -----------------------------
       # 6. Build APK
-      # -----------------------------
       - name: Build Release APK
         working-directory: android
         run: ./gradlew assembleRelease
 
-      # -----------------------------
-      # 7. Upload APK as artifact
-      # -----------------------------
+      # 7. Upload artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
