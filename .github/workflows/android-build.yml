@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '17'  # نسخه Node.js که پروژه به اون نیاز داره
+        node-version: '22'  # نسخه Node.js که پروژه به اون نیاز داره
 
     - name: Install dependencies
       run: |
