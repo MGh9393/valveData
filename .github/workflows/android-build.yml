@@ -52,11 +52,19 @@ jobs:
       - name: Build Release APK
         working-directory: android
         run: |
-         chmod +x gradlew
-         ./gradlew assembleRelease
+          chmod +x gradlew
+          ./gradlew assembleRelease
 
+      # 🔍 مرحله Debug برای پیدا کردن تمام فایل‌های APK
+      - name: Debug - List all APK files
+        run: |
+          echo "Listing all APK files:"
+          find . -type f -name "*.apk" -print
+
+      # 📤 آپلود امن با wildcard
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release.apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          name: app-release
+          path: |
+            **/outp**
