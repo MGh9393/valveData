@@ -29,52 +29,37 @@ jobs:
           npx cap copy
           npx cap sync android
 
-      - name: Set up Java (Temurin 17)
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Android SDK (cmdline-tools & platforms)
+      # 🔥 استفاده از SDK پیش‌فرض GitHub بدون نصب مجدد
+      - name: Configure Android SDK
         run: |
-          # create sdk folders
-          sudo mkdir -p /usr/local/android-sdk/cmdline-tools
-          cd /usr/local/android-sdk/cmdline-tools
-
-          # download command line tools and extract into a temp dir
-          sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
-          sudo unzip -q tools.zip -d temp
-
-          # move correct content into latest (handle nested cmdline-tools folder)
-          sudo mkdir -p latest
-          if [ -d temp/cmdline-tools ]; then
-            sudo mv temp/cmdline-tools/* latest/
-          else
-            sudo mv temp/* latest/
-          fi
-          sudo rm -rf temp tools.zip
-
-          # ensure single SDK env var (avoid conflict)
-          unset ANDROID_SDK_ROOT
-          export ANDROID_HOME=/usr/local/android-sdk
+          echo "Using GitHub preinstalled Android SDK"
+          
+          # محل SDK پیش‌فرض
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
 
-          # accept licenses and install essential packages
-          yes | sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-          sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          yes | sdkmanager --licenses
+          sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
-      - name: Build APK (assembleRelease)
-        env:
-          ANDROID_HOME: /usr/local/android-sdk
+      - name: Build APK
         run: |
-          export ANDROID_HOME=/usr/local/android-sdk
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+
           cd android
-          chmod +x ./gradlew
+          chmod +x gradlew
           ./gradlew assembleRelease --stacktrace
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
+          name: release-apk
           path: android/app/build/outputs/apk/release/*.apk
