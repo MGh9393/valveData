@@ -3,15 +3,16 @@ apply plugin: 'com.android.application'
 android {
     namespace "com.g.mashiz.valvedata"
 
-    // نسخه‌های سازگار با Gradle 8.5.2 و Capacitor
-    compileSdk 34
+    // نسخه‌های کاملاً سازگار
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.g.mashiz.valvedata"
         minSdk 23
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         aaptOptions {
@@ -19,10 +20,16 @@ android {
         }
     }
 
+    // 🔥 رفع خطای "invalid source release: 21"
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -37,6 +44,7 @@ repositories {
 }
 
 dependencies {
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // نسخه‌های پایدار AndroidX
@@ -44,9 +52,9 @@ dependencies {
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
     implementation "androidx.core:core-splashscreen:1.0.1"
 
-    // نسخه‌های مطمئن و سازگار با compileSdk = 34
-    implementation "androidx.core:core:1.13.1"
-    implementation "androidx.core:core-ktx:1.13.1"
+    // سازگار با Capacitor و compileSdk 35
+    implementation "androidx.core:core:1.15.0"
+    implementation "androidx.core:core-ktx:1.15.0"
 
     implementation project(':capacitor-android')
     implementation project(':capacitor-cordova-android-plugins')
@@ -66,12 +74,4 @@ try {
     }
 } catch(Exception e) {
     logger.info("google-services.json not found — google-services plugin skipped.")
-}
-
-// 🔥 جلوگیری قطعی از لود نسخه 1.15.0
-configurations.all {
-    resolutionStrategy {
-        force "androidx.core:core:1.13.1"
-        force "androidx.core:core-ktx:1.13.1"
-    }
 }

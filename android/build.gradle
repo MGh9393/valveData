@@ -6,21 +6,31 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // نسخه پایدار و سازگار با Gradle 8 و Capacitor
+        // نسخه پایدار و سازگار با Gradle 8.x
         classpath 'com.android.tools.build:gradle:8.5.2'
-
         classpath 'com.google.gms:google-services:4.4.2'
     }
 }
 
-// اگر فایل variables.gradle در پروژه‌ات هست، نگه‌دار
-// اگر در GitHub Actions خطا می‌دهد، این خط را حذف کن
+// استفاده از تنظیمات پروژه (SDK + Java 17)
 apply from: "variables.gradle"
 
 allprojects {
     repositories {
         google()
         mavenCentral()
+    }
+}
+
+// تنظیم Java 17 برای تمام subprojects (مهم!)
+subprojects {
+    afterEvaluate { p ->
+        if (p.hasProperty("android")) {
+            p.android.compileOptions {
+                sourceCompatibility rootProject.ext.javaSourceCompatibility
+                targetCompatibility rootProject.ext.javaTargetCompatibility
+            }
+        }
     }
 }
 

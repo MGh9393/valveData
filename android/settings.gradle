@@ -1,5 +1,16 @@
-include ':app'
-include ':capacitor-cordova-android-plugins'
-project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')
+rootProject.name = "valveData"
 
+include ':app'
+
+// Capacitor Android
+include ':capacitor-android'
+project(':capacitor-android').projectDir = new File(rootDir, '../node_modules/@capacitor/android/capacitor')
+
+
+// Capacitor Cordova plugins
+include ':capacitor-cordova-android-plugins'
+project(':capacitor-cordova-android-plugins').projectDir = new File(rootDir, 'capacitor-cordova-android-plugins')
+
+
+// Apply Capacitor settings
 apply from: 'capacitor.settings.gradle'
