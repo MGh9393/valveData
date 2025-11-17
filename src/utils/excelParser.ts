@@ -69,9 +69,9 @@ export const parseExcelFile = async (file: File): Promise<SheetData[]> => {
 
 const getSheetTitle = (index: number): string => {
   const titles = [
-    'ولوهای کنترل - Control Valves',
-    'ولوهای تنظیم خودکار - Self Regulator Valves',
-    'ولوهای کنترل (دسته دوم) - Control Valves (Set 2)'
+    'On-Off Valve',
+    'Self Regulator Valve',
+    'Control Valve'
   ];
   return titles[index] || `Sheet ${index + 1}`;
 };

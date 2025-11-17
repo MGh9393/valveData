@@ -30,21 +30,25 @@ export const ValveDetailDialog = ({ isOpen, onClose, data, headers }: ValveDetai
             {headers.map((header, index) => {
               const value = data[header];
               if (!value || header === data.tag) return null;
-              
+
               return (
-                <div
-                  key={index}
-                  className="grid grid-cols-3 gap-4 p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors"
-                >
-                  <div className="col-span-1 font-semibold text-secondary-foreground">
-                    {header}:
+                  <div
+                      key={index}
+                      className="p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors"
+                  >
+                    {/* Header (line 1) */}
+                    <div className="font-semibold text-secondary-foreground mb-2 text-right" style={{ direction: "rtl", unicodeBidi: "plaintext" }}>
+                      {header}
+                    </div>
+
+                    {/* Value (line 2) */}
+                    <div className="text-foreground text-right" style={{ direction: "rtl", unicodeBidi: "plaintext" }}>
+                      {value}
+                    </div>
                   </div>
-                  <div className="col-span-2 text-foreground">
-                    {value}
-                  </div>
-                </div>
               );
             })}
+
           </div>
         </ScrollArea>
       </DialogContent>
