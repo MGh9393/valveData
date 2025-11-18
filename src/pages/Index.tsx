@@ -4,6 +4,7 @@ import { parseExcelFile } from '@/utils/excelParser';
 import { SheetData } from '@/types/valve';
 import { toast } from 'sonner';
 import { Loader2, Database } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   const [sheets, setSheets] = useState<SheetData[]>([]);
@@ -73,8 +74,12 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="mt-16 py-6 border-t border-primary/20 bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
+        <div className="container mx-auto px-4 text-center text-muted-foreground text-sm space-x-2">
           سیستم مدیریت اطلاعات ولوهای صنعتی
+          <span className="mx-1">|</span>
+          <Link to="/about" className="underline hover:text-primary transition">
+            درباره ما
+          </Link>
         </div>
       </footer>
     </div>

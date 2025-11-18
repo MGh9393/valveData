@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.g.mashiz.valvedata',
-  appName: 'ValveData',
+  appId: 'com.g.bardsir.DRI',
+  appName: 'BardsirDRI',
   webDir: 'dist'
 };
 
