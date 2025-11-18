@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">ValveData</string>
-    <string name="title_activity_main">ValveData</string>
-    <string name="package_name">com.g.mashiz.valvedata</string>
-    <string name="custom_url_scheme">com.g.mashiz.valvedata</string>
+    <string name="app_name">BardsirDRI</string>
+    <string name="title_activity_main">BardsirDRI</string>
+    <string name="package_name">com.g.bardsir.DRI</string>
+    <string name="custom_url_scheme">com.g.bardsir.DRI</string>
 </resources>
